@@ -16,5 +16,11 @@ func Init() *echo.Echo  {
 	//Product
 	e.GET("/product", controllers.GetAllProduct)
 
+	//Order
+	e.GET("/order", controllers.GetAllOrder)
+
+	//Customer
+	e.GET("/customer", controllers.GetAllCustomer)
+
 	return e
 }

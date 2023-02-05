@@ -5,8 +5,6 @@ import (
 	"net/http"
 )
 
-var table = "superstore_product"
-
 type Product struct {
 	ProductId string `json:"product_id"`
 	ProductName string `json:"product_name"`
@@ -15,6 +13,7 @@ type Product struct {
 }
 
 func GetAllProduct() (Response, error){
+	var table = "superstore_product"
 	var obj Product
 	var arrobj []Product
 	var res Response
