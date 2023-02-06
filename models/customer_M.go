@@ -2,6 +2,7 @@ package models
 
 import (
 	"net/http"
+	"strconv"
 	"superstore_api/database"
 	"superstore_api/generator"
 )
@@ -53,7 +54,7 @@ func GetAllCustomer() (Response, error) {
 	}
 
 	res.Status = http.StatusOK
-	res.Message = "Success"
+	res.Message = "Successfully collect " + strconv.Itoa(len(arrobj)) + " data"
 	res.Data = arrobj
 
 	return res, nil

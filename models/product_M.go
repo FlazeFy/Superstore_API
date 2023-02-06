@@ -2,16 +2,30 @@ package models
 
 import (
 	"net/http"
+	"strconv"
 	"superstore_api/database"
 	"superstore_api/generator"
 )
 
-type Product struct {
-	ProductId   string `json:"product_id"`
-	ProductName string `json:"product_name"`
-	Category    string `json:"category"`
-	Subcategory string `json:"subcategory"`
-}
+type (
+	Product struct {
+		ProductId   string `json:"product_id"`
+		ProductName string `json:"product_name"`
+		Category    string `json:"category"`
+		Subcategory string `json:"subcategory"`
+	}
+
+	ProductSubcategoryTotal struct {
+		Category    string `json:"category"`
+		Subcategory string `json:"subcategory"`
+		Total       int64  `json:"total"`
+	}
+
+	ProductCategoryTotal struct {
+		Category string `json:"category"`
+		Total    int64  `json:"total"`
+	}
+)
 
 func GetAllProduct() (Response, error) {
 	var table = "superstore_product"
@@ -40,7 +54,73 @@ func GetAllProduct() (Response, error) {
 	}
 
 	res.Status = http.StatusOK
-	res.Message = "Success"
+	res.Message = "Successfully collect " + strconv.Itoa(len(arrobj)) + " data"
+	res.Data = arrobj
+
+	return res, nil
+}
+
+func GetProductCategoryTotal() (Response, error) {
+	var table = "superstore_product"
+	var obj ProductCategoryTotal
+	var arrobj []ProductCategoryTotal
+	var res Response
+
+	con := database.CreateCon()
+
+	sqlStatement := "SELECT category, count(1) as total FROM " + table + " group by 1 order by 2 DESC"
+
+	rows, err := con.Query(sqlStatement)
+	defer rows.Close()
+
+	if err != nil {
+		return res, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&obj.Category, &obj.Total)
+		if err != nil {
+			return res, err
+		}
+
+		arrobj = append(arrobj, obj)
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "Successfully collect " + strconv.Itoa(len(arrobj)) + " data"
+	res.Data = arrobj
+
+	return res, nil
+}
+
+func GetProductSubcategoryTotal() (Response, error) {
+	var table = "superstore_product"
+	var obj ProductSubcategoryTotal
+	var arrobj []ProductSubcategoryTotal
+	var res Response
+
+	con := database.CreateCon()
+
+	sqlStatement := "SELECT category, subcategory, count(1) as total FROM " + table + " group by 2 order by 1, 3 DESC"
+
+	rows, err := con.Query(sqlStatement)
+	defer rows.Close()
+
+	if err != nil {
+		return res, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&obj.Category, &obj.Subcategory, &obj.Total)
+		if err != nil {
+			return res, err
+		}
+
+		arrobj = append(arrobj, obj)
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "Successfully collect " + strconv.Itoa(len(arrobj)) + " data"
 	res.Data = arrobj
 
 	return res, nil
