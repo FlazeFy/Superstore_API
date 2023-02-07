@@ -5,7 +5,7 @@ import (
 	"superstore_api/routes"
 )
 
-func main()  {
+func main() {
 	database.Init()
 
 	e := routes.Init()

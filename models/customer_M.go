@@ -7,16 +7,28 @@ import (
 	"superstore_api/generator"
 )
 
-type Customer struct {
-	CustomerId   string `json:"customer_id"`
-	CustomerName string `json:"customer_name"`
-	Segment      string `json:"segment"`
-	Country      string `json:"country"`
-	City         string `json:"city"`
-	State        string `json:"state"`
-	PostalCode   string `json:"postal_code"`
-	Region       string `json:"region"`
-}
+type (
+	Customer struct {
+		CustomerId   string `json:"customer_id"`
+		CustomerName string `json:"customer_name"`
+		Segment      string `json:"segment"`
+		Country      string `json:"country"`
+		City         string `json:"city"`
+		State        string `json:"state"`
+		PostalCode   string `json:"postal_code"`
+		Region       string `json:"region"`
+	}
+
+	CustomerState struct {
+		State string `json:"state"`
+		Total int    `json:"total"`
+	}
+
+	CustomerRegion struct {
+		Region string `json:"region"`
+		Total  int    `json:"total"`
+	}
+)
 
 func GetAllCustomer() (Response, error) {
 	var table = "superstore_customer"
@@ -45,6 +57,78 @@ func GetAllCustomer() (Response, error) {
 			&obj.State,
 			&obj.PostalCode,
 			&obj.Region)
+
+		if err != nil {
+			return res, err
+		}
+
+		arrobj = append(arrobj, obj)
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "Successfully collect " + strconv.Itoa(len(arrobj)) + " data"
+	res.Data = arrobj
+
+	return res, nil
+}
+
+func GetTotalCustomerByState() (Response, error) {
+	var table = "superstore_customer"
+	var obj CustomerState
+	var arrobj []CustomerState
+	var res Response
+
+	con := database.CreateCon()
+
+	sqlStatement := "SELECT state , count(1) as total FROM " + table + " group by 1 order by 2 desc"
+
+	rows, err := con.Query(sqlStatement)
+	defer rows.Close()
+
+	if err != nil {
+		return res, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(
+			&obj.State,
+			&obj.Total)
+
+		if err != nil {
+			return res, err
+		}
+
+		arrobj = append(arrobj, obj)
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "Successfully collect " + strconv.Itoa(len(arrobj)) + " data"
+	res.Data = arrobj
+
+	return res, nil
+}
+
+func GetTotalCustomerByRegion() (Response, error) {
+	var table = "superstore_customer"
+	var obj CustomerRegion
+	var arrobj []CustomerRegion
+	var res Response
+
+	con := database.CreateCon()
+
+	sqlStatement := "SELECT region , count(1) as total FROM " + table + " group by 1 order by 2 desc"
+
+	rows, err := con.Query(sqlStatement)
+	defer rows.Close()
+
+	if err != nil {
+		return res, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(
+			&obj.Region,
+			&obj.Total)
 
 		if err != nil {
 			return res, err

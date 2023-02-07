@@ -153,3 +153,33 @@ func AddProduct(ProductName string, Category string, Subcategory string) (Respon
 	}
 	return res, nil
 }
+
+func UpdateProduct(ProductId string, ProductName string, Category string, Subcategory string) (Response, error) {
+	var res Response
+
+	con := database.CreateCon()
+
+	sqlStatement := "UPDATE superstore_product SET product_name = ?, category = ?, subcategory = ? WHERE product_id = ?"
+	stmt, err := con.Prepare(sqlStatement)
+	if err != nil {
+		return res, err
+	}
+
+	result, err := stmt.Exec(ProductName, Category, Subcategory, ProductId)
+	if err != nil {
+		return res, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return res, err
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "Success"
+	res.Data = map[string]int64{
+		"rows_affected": rowsAffected,
+	}
+
+	return res, nil
+}
