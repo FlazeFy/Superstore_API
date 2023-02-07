@@ -24,12 +24,14 @@ func Init() *echo.Echo {
 	//Order
 	e.GET("api/order", controllers.GetAllOrder)
 	e.POST("api/order/add", controllers.AddOrder)
+	e.PUT("api/order/update/:id", controllers.UpdateOrder)
 
 	//Customer
 	e.GET("api/customer", controllers.GetAllCustomer)
 	e.POST("api/customer/add", controllers.AddCustomer)
 	e.GET("api/customer/region", controllers.GetTotalCustomerByRegion)
 	e.GET("api/customer/state", controllers.GetTotalCustomerByState)
+	e.PUT("api/customer/update/:id", controllers.UpdateCustomer)
 
 	return e
 }

@@ -95,3 +95,33 @@ func AddOrder(ShipDate string, ShipMode string, CustomerId string, ProductId str
 
 	return res, nil
 }
+
+func UpdateOrder(OrderId string, OrderDate string, ShipDate string, ShipMode string, CustomerId string, ProductId string, Sales float64, Quantity int64, Discount float64, Profit float64) (Response, error) {
+	var res Response
+
+	con := database.CreateCon()
+
+	sqlStatement := "UPDATE superstore_order SET order_date = ?, ship_date = ?, ship_mode = ?, customer_id = ?, product_id = ?, sales = ?, quantity = ?, discount = ?, profit = ? WHERE order_id = ?"
+	stmt, err := con.Prepare(sqlStatement)
+	if err != nil {
+		return res, err
+	}
+
+	result, err := stmt.Exec(OrderDate, ShipDate, ShipMode, CustomerId, ProductId, Sales, Quantity, Discount, Profit, OrderId)
+	if err != nil {
+		return res, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return res, err
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "Success"
+	res.Data = map[string]int64{
+		"rows_affected": rowsAffected,
+	}
+
+	return res, nil
+}

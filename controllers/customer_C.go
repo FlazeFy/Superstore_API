@@ -51,3 +51,21 @@ func AddCustomer(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, result)
 }
+
+func UpdateCustomer(c echo.Context) error {
+	CustomerId := c.Param("id")
+	CustomerName := c.FormValue("customer_name")
+	Segment := c.FormValue("segment")
+	Country := c.FormValue("country")
+	City := c.FormValue("city")
+	State := c.FormValue("state")
+	PostalCode := c.FormValue("postal_code")
+	Region := c.FormValue("region")
+
+	result, err := models.UpdateCustomer(CustomerId, CustomerName, Segment, Country, City, State, PostalCode, Region)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, result)
+}

@@ -171,3 +171,34 @@ func AddCustomer(CustomerName string, Segment string, Country string, City strin
 	}
 	return res, nil
 }
+
+func UpdateCustomer(CustomerId string, CustomerName string, Segment string, Country string, City string, State string, PostalCode string, Region string) (Response, error) {
+	var res Response
+
+	con := database.CreateCon()
+
+	sqlStatement := "UPDATE superstore_customer SET customer_name = ?, segment = ?, country = ?, city = ?, state = ?, postal_code = ?, region = ? WHERE customer_id = ?"
+
+	stmt, err := con.Prepare(sqlStatement)
+	if err != nil {
+		return res, err
+	}
+
+	result, err := stmt.Exec(CustomerName, Segment, Country, City, State, PostalCode, Region, CustomerId)
+	if err != nil {
+		return res, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return res, err
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "Success"
+	res.Data = map[string]int64{
+		"rows_affected": rowsAffected,
+	}
+
+	return res, nil
+}
